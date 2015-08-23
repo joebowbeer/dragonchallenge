@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.Deque;
 import java.util.Queue;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -100,7 +99,8 @@ public class Dragon {
       queue.add(new Node(0, null));
       visited[0] = true;
     }
-    while (!queue.isEmpty()) {
+    // Breadth-first search to find a traveral with the smallest number of flights.
+    for (int flights = 1; !queue.isEmpty(); flights++) {
       for (int traversals = queue.size(); --traversals >= 0;) {
         Node traversal = queue.remove();
         int lastIndex = traversal.index;
@@ -109,13 +109,14 @@ public class Dragon {
         for (int flight = longestFlight; flight > 0; --flight) {
           int nextIndex = lastIndex + flight;
           if (nextIndex >= canyon.length) {
-            // Canyon traversed! Reverse the list of indices.
-            Deque<Integer> stack = new ArrayDeque<>();
-            for (Node node = traversal; node != null; node = node.prev) {
-              stack.push(node.index);
+            // Canyon traversed! Return array of indices.
+            int[] result = new int[flights];
+            Node node = traversal;
+            for (int index = flights; --index >= 0; node = node.prev) {
+              result[index] = node.index;
             }
-            // convert to int[]
-            return stack.stream().mapToInt(Integer::intValue).toArray();
+            assert node == null;
+            return result;
           }
           // If we jumped to new element, enqueue new traversal for future exploration.
           if (!visited[nextIndex]) {
