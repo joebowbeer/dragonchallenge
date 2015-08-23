@@ -72,7 +72,8 @@ public class Dragon {
   }
 
   /**
-   * Represents list of indices in a traversal. Each node is linked to the previously visited node.
+   * Represents list of indices in a traversal.
+   * Each node is linked to the previously visited node.
    */
   private static class Node {
 
@@ -108,15 +109,15 @@ public class Dragon {
         for (int flight = longestFlight; flight > 0; --flight) {
           int nextIndex = lastIndex + flight;
           if (nextIndex >= canyon.length) {
-            // solved!
+            // Canyon traversed! Reverse the list of indices.
             Deque<Integer> stack = new ArrayDeque<>();
-            // reverses the list of indices
             for (Node node = traversal; node != null; node = node.prev) {
               stack.push(node.index);
             }
-            // converts to int[]
+            // convert to int[]
             return stack.stream().mapToInt(Integer::intValue).toArray();
           }
+          // If we jumped to new element, enqueue new traversal for future exploration.
           if (!visited[nextIndex]) {
             queue.add(new Node(nextIndex, traversal));
             visited[nextIndex] = true;

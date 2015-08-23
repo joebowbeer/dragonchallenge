@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.util.Random;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -35,18 +36,18 @@ public class DragonTest {
 
   @Test
   public void parsesEmpty() {
-    assertArrayEquals(new int[0], Dragon.parse(newInputStream()));
+    assertArrayEquals(new int[0], Dragon.parse(inputStream()));
   }
 
   @Test
   public void parsesOne() {
-    assertArrayEquals(new int[]{1}, Dragon.parse(newInputStream(1)));
+    assertArrayEquals(new int[]{1}, Dragon.parse(inputStream(1)));
   }
 
   @Test
   public void parsesSampleInput() {
     assertArrayEquals(new int[]{5, 6, 0, 4, 2, 4, 1, 0, 0, 4},
-        Dragon.parse(newInputStream(5, 6, 0, 4, 2, 4, 1, 0, 0, 4)));
+        Dragon.parse(inputStream(5, 6, 0, 4, 2, 4, 1, 0, 0, 4)));
   }
 
   @Test
@@ -84,7 +85,18 @@ public class DragonTest {
     assertEquals("failure", solutionOf(-1));
   }
 
-  private static InputStream newInputStream(int... values) {
+  @Test
+  public void handlesManyElements() {
+    int canyonLength = 1000000;
+    int longestFlight = 50;
+    int dragonCount = 5000;
+    for (int trial = 0; trial < 10; trial++) {
+      int[] traversal = Dragon.solve(randomCanyon(canyonLength, longestFlight, dragonCount));
+      System.out.printf("Trail %d: traversal length %d%n", trial, traversal.length);
+    }
+  }
+  
+  private static InputStream inputStream(int... values) {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     try (PrintStream ps = new PrintStream(baos)) {
       for (int i : values) {
@@ -97,8 +109,29 @@ public class DragonTest {
   private static String solutionOf(int... values) throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     try (PrintStream ps = new PrintStream(baos)) {
-      Dragon.solve(newInputStream(values), ps);
+      Dragon.solve(inputStream(values), ps);
     }
     return new BufferedReader(new StringReader(baos.toString())).readLine();
+  }
+
+  private static int[] randomCanyon(
+      int canyonLength, int longestFlight, int dragonCount) {
+    if (dragonCount >= canyonLength){
+      throw new IllegalArgumentException();
+    }
+    int[] canyon = new int[canyonLength];
+    Random random = new Random();
+    // The canyon starts with the clan of dragons on the left.
+    // Remaining elements are initialized with random lengths.
+    for (int index = dragonCount; index < canyonLength; index++) {
+      canyon[index] = 1 + random.nextInt(longestFlight);
+    }
+    // Disperse dragons into canyon by swapping with randomly chosen elements
+    for (int dragon = 0; dragon < dragonCount; dragon++) {
+      int dragonIndex = dragonCount + random.nextInt(canyonLength - dragonCount);
+      canyon[dragon] = canyon[dragonIndex];
+      canyon[dragonIndex] = 0;
+    }
+    return canyon;
   }
 }
