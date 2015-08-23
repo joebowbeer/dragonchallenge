@@ -1,0 +1,16 @@
+apply plugin: 'application'
+
+sourceCompatibility = '1.8'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+ext.mainClass = 'joebowbeer.Dragon'
+// NB Gradle Support defines mainClass property but application plugin expects mainClassName
+mainClassName = mainClass
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.10'
+}
