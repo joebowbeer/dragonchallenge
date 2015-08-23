@@ -10,6 +10,7 @@ import java.io.StringReader;
 import java.util.Random;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 public class DragonTest {
@@ -86,13 +87,24 @@ public class DragonTest {
   }
 
   @Test
-  public void handlesManyElements() {
+  public void solvesRandomCanyons() {
     int canyonLength = 1000000;
     int longestFlight = 50;
     int dragonCount = 5000;
     for (int trial = 0; trial < 10; trial++) {
-      int[] traversal = Dragon.solve(randomCanyon(canyonLength, longestFlight, dragonCount));
+      int[] canyon = randomCanyon(canyonLength, longestFlight, dragonCount);
+      int[] traversal = Dragon.solve(canyon);
       System.out.printf("Trail %d: traversal length %d%n", trial, traversal.length);
+
+      if (traversal.length != 0) {
+        // validate traversal
+        int index = traversal[0];
+        assertEquals(0, index);
+        for (int flight = 1; flight < traversal.length; index = traversal[flight++]) {
+          assertTrue(index + canyon[index] >= traversal[flight]);
+        }
+        assertTrue(index + canyon[index] >= canyon.length);
+      }
     }
   }
   
