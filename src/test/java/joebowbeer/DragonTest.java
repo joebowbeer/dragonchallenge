@@ -90,7 +90,7 @@ public class DragonTest {
   public void solvesRandomCanyons() {
     int canyonLength = 1000000;
     int longestFlight = 50;
-    int dragonCount = 5000;
+    int dragonCount = 10000;
     for (int trial = 0; trial < 10; trial++) {
       int[] canyon = randomCanyon(canyonLength, longestFlight, dragonCount);
       int[] traversal = Dragon.solve(canyon);
