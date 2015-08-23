@@ -141,6 +141,7 @@ public class DragonTest {
     // Disperse dragons into canyon by swapping with randomly chosen elements
     for (int dragon = 0; dragon < dragonCount; dragon++) {
       int dragonIndex = dragonCount + random.nextInt(canyonLength - dragonCount);
+      assert canyon[dragon] == 0;
       canyon[dragon] = canyon[dragonIndex];
       canyon[dragonIndex] = 0;
     }
