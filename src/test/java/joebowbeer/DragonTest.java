@@ -91,10 +91,10 @@ public class DragonTest {
     int canyonLength = 1000000;
     int longestFlight = 50;
     int dragonCount = 10000;
-    for (int trial = 0; trial < 10; trial++) {
+    for (int trial = 0; trial < 16; trial++) {
       int[] canyon = randomCanyon(canyonLength, longestFlight, dragonCount);
       int[] traversal = Dragon.solve(canyon);
-      System.out.printf("Trail %d: traversal length %d%n", trial, traversal.length);
+      System.out.printf("Trial %2d: traversal length %d%n", trial, traversal.length);
 
       if (traversal.length != 0) {
         // validate traversal
@@ -140,7 +140,7 @@ public class DragonTest {
     }
     // Disperse dragons into canyon by swapping with randomly chosen elements
     for (int dragon = 0; dragon < dragonCount; dragon++) {
-      int dragonIndex = dragonCount + random.nextInt(canyonLength - dragonCount);
+      int dragonIndex = (dragon + 1) + random.nextInt(canyonLength - (dragon + 1));
       assert canyon[dragon] == 0;
       canyon[dragon] = canyon[dragonIndex];
       canyon[dragonIndex] = 0;
