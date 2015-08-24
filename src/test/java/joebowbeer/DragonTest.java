@@ -133,17 +133,19 @@ public class DragonTest {
     }
     int[] canyon = new int[canyonLength];
     Random random = new Random();
-    // The canyon starts with the clan of dragons on the left.
-    // Remaining elements are initialized with random lengths.
-    for (int index = dragonCount; index < canyonLength; index++) {
+    // The canyon starts with the clan of dragons on the right, with remaining
+    // elements initialized to random lengths.
+    for (int index = canyonLength - dragonCount; --index >= 0; ) {
       canyon[index] = 1 + random.nextInt(longestFlight);
     }
-    // Disperse dragons into canyon by swapping with randomly chosen elements
-    for (int dragon = 0; dragon < dragonCount; dragon++) {
-      int dragonIndex = (dragon + 1) + random.nextInt(canyonLength - (dragon + 1));
-      assert canyon[dragon] == 0;
-      canyon[dragon] = canyon[dragonIndex];
-      canyon[dragonIndex] = 0;
+    // Shuffle the array; except first element, for no dragon should be there.
+    for (int index = 1; index < canyonLength; index++) {
+      int swapIndex = index + random.nextInt(canyonLength - index);
+      if (swapIndex != index) {
+        int swapValue = canyon[swapIndex];
+        canyon[swapIndex] = canyon[index];
+        canyon[index] = swapValue;
+      }
     }
     return canyon;
   }
