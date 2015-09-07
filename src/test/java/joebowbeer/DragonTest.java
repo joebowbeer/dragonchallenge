@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.util.Arrays;
 import java.util.Random;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -17,17 +18,26 @@ public class DragonTest {
 
   @Test
   public void solvesEmpty() {
-    assertArrayEquals(new int[0], Dragon.solve(new int[0]));
+    int[] canyon = new int[0];
+    int[] solution = new int[0];
+    checkSolution(canyon, solution);
+    assertArrayEquals(solution, Dragon.solve(canyon));
   }
 
   @Test
   public void solvesOne() {
-    assertArrayEquals(new int[]{0}, Dragon.solve(new int[]{1}));
+    int[] canyon = new int[]{1};
+    int[] solution = new int[]{0};
+    checkSolution(canyon, solution);
+    assertArrayEquals(solution, Dragon.solve(canyon));
   }
 
   @Test
   public void solvesSample() {
-    assertArrayEquals(new int[]{0, 5, 9}, Dragon.solve(new int[]{5, 6, 0, 4, 2, 4, 1, 0, 0, 4}));
+    int[] canyon = new int[]{5, 6, 0, 4, 2, 4, 1, 0, 0, 4};
+    int[] solution = new int[]{0, 5, 9};
+    checkSolution(canyon, solution);
+    assertArrayEquals(solution, Dragon.solve(canyon));
   }
 
   @Test
@@ -95,19 +105,10 @@ public class DragonTest {
       int[] canyon = randomCanyon(canyonLength, longestFlight, dragonCount);
       int[] traversal = Dragon.solve(canyon);
       System.out.printf("Trial %2d: traversal length %d%n", trial, traversal.length);
-
-      if (traversal.length != 0) {
-        // validate traversal
-        int index = traversal[0];
-        assertEquals(0, index);
-        for (int flight = 1; flight < traversal.length; index = traversal[flight++]) {
-          assertTrue(index + canyon[index] >= traversal[flight]);
-        }
-        assertTrue(index + canyon[index] >= canyon.length);
-      }
+      checkSolution(canyon, traversal);
     }
   }
-  
+
   private static InputStream inputStream(int... values) {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     try (PrintStream ps = new PrintStream(baos)) {
@@ -128,14 +129,14 @@ public class DragonTest {
 
   private static int[] randomCanyon(
       int canyonLength, int longestFlight, int dragonCount) {
-    if (dragonCount >= canyonLength){
+    if (dragonCount >= canyonLength) {
       throw new IllegalArgumentException();
     }
     int[] canyon = new int[canyonLength];
     Random random = new Random();
     // The canyon starts with the clan of dragons on the right, with remaining
     // elements initialized to random lengths.
-    for (int index = canyonLength - dragonCount; --index >= 0; ) {
+    for (int index = canyonLength - dragonCount; --index >= 0;) {
       canyon[index] = 1 + random.nextInt(longestFlight);
     }
     // Shuffle the array; except first element, for no dragon should be there.
@@ -148,5 +149,19 @@ public class DragonTest {
       }
     }
     return canyon;
+  }
+
+  /**
+   * Validates traversal.
+   */
+  private static void checkSolution(int[] canyon, int[] traversal) {
+    if (traversal.length > 0) {
+      assertEquals(0, traversal[0]);
+      int lastIndex = Arrays.stream(traversal).reduce((prevIndex, index) -> {
+        assertTrue(prevIndex + canyon[prevIndex] >= index);
+        return index;
+      }).getAsInt();
+      assertTrue(lastIndex + canyon[lastIndex] >= canyon.length);
+    }
   }
 }
